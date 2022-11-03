@@ -1,0 +1,10 @@
+export TESLA='/tesla'
+export OUTFILE="output/gridstatus.log"
+export LANGUAGE='en-US'
+export TTS_LOCALE='en-US'
+export AMAZON='amazon.com'
+export ALEXA='alexa.amazon.com'
+export TMP='/alexa-remote-control'
+export ALEXARC='./alexa-remote-control/alexa_remote_control.sh'
+
+. ./secrets
