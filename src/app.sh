@@ -17,13 +17,13 @@ GSCMD="curl -s -k \
        -b $TESLA/cookie.txt \
         https://$IP/api/system_status/grid_status"
 
-TIMESTAMP="$(date -I'seconds')"
+TIMESTAMP="$(TZ='America/New_York' date -I'seconds')"
 # Note explicit conversion of numbers to base 10; otherwise
 # they are interpreted as octal numbers, causing errors
 # with '08' and '09'.
 # Found fix at: https://stackoverflow.com/questions/24777597
-HOUR=$((10#$(date "+%H")))
-MIN=$((10#$(date "+%M")))
+HOUR=$((10#$(TZ="America/New_York" date "+%H")))
+MIN=$((10#$(TZ="America/New_York" date "+%M")))
 
 # Changed on 2021-12-15 - get new token every time.
 # echo "Logging in..."
