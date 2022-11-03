@@ -2,6 +2,8 @@
 
 . ./env
 
+#$ALEXARC -e textcommand:"Turn off the bistro lights"
+
 IP="$(grep 'IP=' $TESLA/secrets |cut -d'=' -f2)"
 
 LOGINCMD=(curl -s -k -i
@@ -12,9 +14,8 @@ LOGINCMD=(curl -s -k -i
           https://$IP/api/login/Basic )
 
 GSCMD="curl -s -k \
-      -b $TESLA/cookie.txt \
-      https://$IP/api/system_status/grid_status"
-
+       -b $TESLA/cookie.txt \
+        https://$IP/api/system_status/grid_status"
 
 TIMESTAMP="$(date -I'seconds')"
 # Note explicit conversion of numbers to base 10; otherwise

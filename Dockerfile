@@ -14,5 +14,7 @@ COPY ./src .
 
 # Create storage directory for database
 RUN mkdir /data
+RUN mkdir /tesla
+RUN mkdir /alexa_remote_control
 
 CMD ["/bin/bash", "app.sh"]

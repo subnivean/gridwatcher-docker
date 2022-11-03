@@ -1,0 +1,3 @@
+# Create an empty directory (except for `.gitignore`)
+*
+!.gitignore
