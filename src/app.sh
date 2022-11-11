@@ -4,20 +4,14 @@
 
 #$ALEXARC -e textcommand:"Turn off the bistro lights"
 
-IP="$(grep 'IP=' $TESLA/secrets |cut -d'=' -f2)"
-
-LOGINCMD=(curl -s -k -i
-          -c $TESLA/cookie.txt
-          -X POST
-          -H "Content-Type: application/json"
-          -d @$TESLA/creds.json
-          https://$IP/api/login/Basic )
-
-GSCMD="curl -s -k \
-       -b $TESLA/cookie.txt \
-        https://$IP/api/system_status/grid_status"
+# Settings for the machine that's getting and storing the
+# Tesla gateway data
+TESLADATAIP="192.168.1.10"
+TESLADATAPATH="/home/pi/Tesla-docker/data/energy.sqlite"
+TESLAQUERY="SELECT GridStatus FROM energy_data ORDER BY ROWID DESC LIMIT 1;"
 
 TIMESTAMP="$(TZ='America/New_York' date -I'seconds')"
+
 # Note explicit conversion of numbers to base 10; otherwise
 # they are interpreted as octal numbers, causing errors
 # with '08' and '09'.
@@ -25,28 +19,16 @@ TIMESTAMP="$(TZ='America/New_York' date -I'seconds')"
 HOUR=$((10#$(TZ="America/New_York" date "+%H")))
 MIN=$((10#$(TZ="America/New_York" date "+%M")))
 
-# Changed on 2021-12-15 - get new token every time.
-# echo "Logging in..."
-max_retry=5
-counter=0
-until "${LOGINCMD[@]}" |grep token >/dev/null
-do
-    sleep 5
-    [[ counter -eq $max_retry ]] && echo "Failed!" && break
-    #echo "Trying again. Try #$counter"
-    ((counter++))
-done
+cmd="ssh -q -i /app/id_rsa_rpi \
+         -o StrictHostKeyChecking=no \
+         -l pi \
+         $TESLADATAIP \
+            sqlite3 -readonly $TESLADATAPATH '$TESLAQUERY' \
+    "
 
-GSTATUS="$($GSCMD | jq -r '.grid_status')"
+GSTATUS=$($cmd)
 
-echo "$TIMESTAMP,$GSTATUS" >> $OUTFILE
-
-if [[ "$GSTATUS" == "null" ]]  # Bad cookie? Or can't reach?
-then
-    # echo "$TIMESTAMP: Got a 'null'"
-    sleep 10
-    continue
-fi
+#echo "$TIMESTAMP,$GSTATUS" >> $OUTFILE
 
 # Make sure we got a response from the Tesla Gateway.
 if [[ "$GSTATUS" == "" ]]
