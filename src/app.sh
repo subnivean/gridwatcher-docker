@@ -50,7 +50,7 @@ then
 fi
 
 if [ -d '/dev/usb/' ]; then SILENCER=true; else SILENCER=false; fi
-if [[ "$GSTATUS" == "SystemIslandedActive" ]]; then GRID=false; else GRID=true; fi
+if [[ "$GSTATUS" == "SystemGridConnected" ]]; then GRID=true; else GRID=false; fi
 
 if ! $GRID
 then
