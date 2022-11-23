@@ -11,5 +11,5 @@ docker run --rm \
   -v $SCRIPT_PATH/src:/app \
   -v $SCRIPT_PATH/tesla:/tesla \
   -v $SCRIPT_PATH/alexa_remote_control:/alexa_remote_control \
-   gridwatcher
+   allinone-py311 /bin/bash app.sh
 
