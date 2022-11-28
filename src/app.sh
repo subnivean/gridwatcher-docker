@@ -45,8 +45,7 @@ if [[ $HOUR -eq 19 && $MIN -eq 13 ]]
 then
     # echo "$TIMESTAMP: Announcing test..."
     $ALEXARC -e "speak: \
-        'This is your daily test of the Clowder Cove gridwatcherPEYE \
-        system. This is only a test.'"
+        'This is your daily test of the Clowder Cove gridwatcherPEYE system.'"
 fi
 
 if [ -d '/dev/usb/' ]; then SILENCER=true; else SILENCER=false; fi
@@ -60,7 +59,7 @@ then
         $ALEXARC -e "speak: \
             'Clowder Cove grid is down. SAAAAAD. Unplug the car if \
             its charging and turn off the heatpump to conserve the \
-            Powerwall. You can turn on the gas heater if your ass \
+            Powerwall. You can turn on the gas heater if it \
             gets too cold. You can silence this message by plugging \
             any USB device into any USB port on the gridwatcherpeye.'"
     fi
