@@ -9,6 +9,7 @@
 TESLADATAIP="192.168.1.10"
 TESLADATAPATH="/home/pi/Tesla-docker/data/energy.sqlite"
 TESLAQUERY="SELECT GridStatus FROM energy_data ORDER BY ROWID DESC LIMIT 1;"
+TIMERFILE=_timer.tmp
 
 TIMESTAMP="$(TZ='America/New_York' date -I'seconds')"
 
@@ -49,26 +50,60 @@ then
 fi
 
 if [ -d '/dev/usb/' ]; then SILENCER=true; else SILENCER=false; fi
+
+# Negate sense for test
 if [[ "$GSTATUS" == "SystemGridConnected" ]]; then GRID=true; else GRID=false; fi
+#if [[ "$GSTATUS" != "SystemGridConnected" ]]; then GRID=true; else GRID=false; fi
+
+if [ -f $TIMERFILE ]
+then
+    now=$(date '+%s')
+    age=$(date '+%s' -r $TIMERFILE)
+    let AGEOFTIMERFILE=$now-$age
+else
+    AGEOFTIMERFILE=0
+fi
+
+# echo "AGEOFTIMERFILE: $AGEOFTIMERFILE"
+# echo "SILENCER: $SILENCER"
 
 if ! $GRID
 then
-    if ! $SILENCER
+    if [[ $SILENCER = false && ( $AGEOFTIMERFILE -eq 0 || $AGEOFTIMERFILE -gt 5 ) ]]
     then
         # echo "$TIMESTAMP: Announcing grid down..."
         $ALEXARC -e "speak: \
             'Clowder Cove grid is down. SAAAAAD. Unplug the car if \
-            its charging and turn off the heatpump to conserve the \
-            Powerwall. You can turn on the gas heater if it \
+            its charging and turn off the heatpump and any space \
+            heaters to conserve the Powerwall. \
+            You can turn on the gas heater if it \
             gets too cold. You can silence this message by plugging \
             any USB device into any USB port on the gridwatcherpeye.'"
+    # else
+    #     echo "$TIMESTAMP: Waiting for timeout..."
     fi
+
+    # Touch a flag file to use as a 5-minute timer
+    # to allow for reboot time after a 'blip'.
+    if [ ! -f $TIMERFILE ]
+    then
+        touch $TIMERFILE
+    fi
+
 else
+    # Remove timer file if present
+    if [ -f $TIMERFILE ]
+    then
+        rm -f $TIMERFILE
+    fi
+
     if $SILENCER
     then
         # echo "$TIMESTAMP: Announcing silencer reminder..."
         $ALEXARC -e "speak: \
             'This is a reminder. Clowder Cove grid is up. Remove the USB \
             silencer dongle from the gridwatcherpeye.'"
+    # else
+    #     echo "$TIMESTAMP: Grid is up (no announcement)..."
     fi
 fi
