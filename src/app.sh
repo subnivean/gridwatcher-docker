@@ -69,7 +69,7 @@ fi
 
 if ! $GRID
 then
-    if [[ $SILENCER = false && ( $AGEOFTIMERFILE -eq 0 || $AGEOFTIMERFILE -gt 5 ) ]]
+    if [[ $SILENCER = false && ( $AGEOFTIMERFILE -eq 0 || $AGEOFTIMERFILE -gt 360 ) ]]
     then
         # echo "$TIMESTAMP: Announcing grid down..."
         $ALEXARC -e "speak: \
