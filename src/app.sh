@@ -105,5 +105,6 @@ else
             silencer dongle from the gridwatcherpeye.'"
     # else
     #     echo "$TIMESTAMP: Grid is up (no announcement)..."
+    #     $ALEXARC -e "speak: 'Clowder Cove grid is up. '"
     fi
 fi
